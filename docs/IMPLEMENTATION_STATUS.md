@@ -1,32 +1,24 @@
 # Implementation Status
 
-## Complete in 0.1 foundation
+## Complete in 0.3
 
-- Phase 1: Electron/React/TypeScript/Vite/Tailwind foundation
-- secure main/preload/renderer separation and validated IPC
-- SQLite WAL database and first migration
-- Pino structured rotating-at-startup logs with redaction
-- encrypted credential vault
-- secure application window, single instance, tray, startup preference, and close-to-tray behavior
-- Rust+ provider contract, maintained live provider, and development-only simulator
-- independent multi-server sessions, connection states, heartbeats, reconnect/backoff/jitter
-- onboarding, server profiles, server switching, dashboard telemetry, settings, diagnostics, help, and command palette
-- original map-first operations shell with icon rail, server/device context, capability-aware map canvas, and searchable local event console
-- NSIS and portable electron-builder targets
-- unit, UI, schema, simulation, and SQL migration tests
+- secure Electron/React foundation, SQLite settings/workspaces, encrypted credentials, tray lifecycle, diagnostics, packaging, and installed-build updates
+- independent multi-server Rust+ sessions with heartbeat, reconnect/backoff/jitter, favorites, switching, endpoint tests, and combined status
+- serialized Rust+ token budgeting and typed operations snapshots
+- server identity/population/wipe/day-night/quality telemetry
+- live map image, grid, coordinates, monuments, notes, team, world events, vending shops, layers, pins, routes, measurements, export, mini window, and optional position heatmap
+- team/clan rosters and chat, leader promotion, clan MOTD, templates, search, export, and pop-out chat
+- smart switches, alarms, storage monitor contents, manual entity configuration, state verification, and action confirmations
+- manual camera IDs, reconstructed frames, PTZ movement/zoom, snapshots, and safe omission of turret fire/reload
+- event zones/history, native connection alerts, and guarded automations with cooldowns, quiet hours, emergency pause, chat/device actions, and HTTPS webhooks
+- local team tasks, notes, checklists, shopping, basic calculators, JSON workspace backup/import, privacy mode, themes, scale, and compact density
 
-## Next coherent increment
+## Protocol-dependent or intentionally bounded
 
-Phase 2 should be completed before building the map UI:
-
-1. implement centralized priority polling with token budgets, deduplication, and coalescing;
-2. normalize team, chat, map marker, and entity broadcasts into typed application events;
-3. persist bounded connection/server telemetry and audit events;
-4. add in-app FCM pairing or a carefully sandboxed helper workflow;
-5. add provider contract tests against captured, sanitized protocol fixtures;
-6. add Windows native notification routing for connection failures;
-7. add secure support-bundle export.
-
-## Not yet implemented
-
-Phases 4–16 from the product brief remain roadmap work. Navigation states explain prerequisites and do not pretend those services exist. The first public release acceptance checklist is therefore not yet complete.
+- Rust+ fields remain unavailable when a server omits them or disables its Companion Server.
+- Camera IDs are manually entered because Rust+ does not expose a universal discovery list.
+- Calculators use explicitly labeled local values and should be checked after Rust balance updates.
+- Position history is opt-in and bounded locally.
+- “Raid” alerts can use alarms/explosion markers, but RCC cannot identify an attacker, explosive, target base, or damage from Rust+ alone.
+- Enemy tracking, building health, arbitrary inventories, combat logs, and RCON administration are not claimed.
+- Steam/FCM registration remains the maintained upstream helper flow; RCC supplies a guided manual form, encrypted storage, duplicate detection, and a Companion-port test.

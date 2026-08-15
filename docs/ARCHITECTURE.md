@@ -14,7 +14,7 @@ RCC uses three security and responsibility boundaries:
 
 `src/shared` contains Zod schemas, DTOs, IPC channel names, branding, and normalized application events. Main handlers validate incoming data. Preload validates returned data and event payloads before delivering them to React.
 
-Feature services communicate through `AppEventBus`; protocol messages do not drive React directly. Current normalized events cover server status, telemetry, and settings. New features should add narrow discriminated events rather than broadcast a complete application snapshot.
+Feature services communicate through `AppEventBus`; protocol messages do not drive React directly. Normalized events cover status, telemetry, operations snapshots, camera frames, and settings.
 
 ## Persistence
 
@@ -26,11 +26,11 @@ Core tables currently include settings, server profiles, telemetry envelopes, an
 
 `RustPlusProvider` is the anti-corruption boundary around protocol libraries. The live provider adapts the maintained RustWire fork. The mock provider exists only in unpackaged development and stamps every observation with `source: "simulation"`.
 
-`RustPlusConnectionManager` owns one session per server. Sessions have independent status, heartbeat, exponential retry, jitter, telemetry, and cleanup. A failing profile cannot tear down another profile. The next core increment should add centralized prioritized polling and durable protocol event normalization before map, chat, or device features consume the provider.
+`RustPlusConnectionManager` owns one session per server. Sessions have independent status, heartbeat, exponential retry, jitter, telemetry, operations state, broadcast refresh, and cleanup. The live provider serializes requests behind a token budget, caches static map data, and bounds entity polling. A failing profile cannot tear down another profile.
 
 ## Renderer modules
 
-Navigation is metadata-driven. Implemented Phase 3 modules register real routes. Later modules render a shared unavailable state with a technical prerequisite. Private components are not imported across feature folders; common UI belongs in `design-system` or `features/common`.
+The renderer uses one map-first operations workspace. The collapsible sidebar contains four high-level destinations; a bottom dock opens contextual drawers for overview, events, team, comms, devices, shops, cameras, automation, and planning tools.
 
 Zustand stores transient renderer state plus validated copies of main-process data. Persistent settings remain authoritative in SQLite.
 

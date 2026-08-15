@@ -1,6 +1,6 @@
 {
   "name": "rust-command-center",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A local-first Windows operations center for Rust+ servers.",
   "main": "dist/main/main/index.js",
   "author": "Rust Command Center contributors",

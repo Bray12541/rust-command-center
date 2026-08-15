@@ -25,6 +25,7 @@ export class UpdateService {
           ? "Install Rust Command Center once to enable automatic updates"
           : "Update checks are available in packaged builds",
       canAutoUpdate: enabled,
+      releaseNotes: null,
     };
 
     this.updater.autoDownload = false;
@@ -37,6 +38,11 @@ export class UpdateService {
       debug: (message) => this.logger.debug({ service: "updates", message }, "Updater debug"),
     };
     this.bindEvents();
+  }
+
+  setPreferences(channel: "stable" | "beta", skippedVersion: string | null): void {
+    this.updater.allowPrerelease = channel === "beta";
+    this.skippedVersion = skippedVersion;
   }
 
   start(): void {
@@ -93,11 +99,16 @@ export class UpdateService {
       this.setState({ phase: "checking", progress: null, message: "Checking GitHub for updates…" });
     });
     this.updater.on("update-available", (info: UpdateInfo) => {
+      if (info.version === this.skippedVersion) {
+        this.setState({ phase: "up-to-date", availableVersion: info.version, progress: null, message: `Version ${info.version} is skipped`, releaseNotes: this.notes(info) });
+        return;
+      }
       this.setState({
         phase: "available",
         availableVersion: info.version,
         progress: null,
         message: `Version ${info.version} is ready to download`,
+        releaseNotes: this.notes(info),
       });
     });
     this.updater.on("update-not-available", () => {
@@ -121,6 +132,15 @@ export class UpdateService {
       });
     });
     this.updater.on("error", (error: Error) => this.fail(error, "Update service unavailable"));
+  }
+
+  private skippedVersion: string | null = null;
+
+  private notes(info: UpdateInfo): string | null {
+    const notes = info.releaseNotes;
+    if (typeof notes === "string") return notes.slice(0, 5_000);
+    if (Array.isArray(notes)) return notes.map((note) => note.note).filter(Boolean).join("\n").slice(0, 5_000) || null;
+    return null;
   }
 
   private fail(error: unknown, fallback: string): void {

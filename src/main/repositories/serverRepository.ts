@@ -93,6 +93,11 @@ export class ServerRepository {
     return this.require(id);
   }
 
+  setFavorite(id: string, favorite: boolean): ServerProfile {
+    this.db.update(schema.servers).set({ favorite, updatedAt: new Date().toISOString() }).where(eq(schema.servers.id, id)).run();
+    return this.require(id);
+  }
+
   delete(id: string): void {
     this.db.delete(schema.servers).where(eq(schema.servers.id, id)).run();
   }

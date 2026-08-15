@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { FlaskConical, LockKeyhole, Server } from "lucide-react";
+import { CircleHelp, FlaskConical, LockKeyhole, Network, Server } from "lucide-react";
 import { Button } from "../../design-system/Button";
 import type { CreateServerRequest } from "../../../shared/schemas/server";
 import { useAppStore } from "../../stores/appStore";
@@ -18,9 +18,12 @@ const INITIAL_FORM: CreateServerRequest = {
 export function ServerForm({ onCreated, compact = false }: { onCreated?(): void; compact?: boolean }) {
   const [form, setForm] = useState<CreateServerRequest>(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
+  const [testResult, setTestResult] = useState<{ reachable: boolean; message: string } | null>(null);
+  const [testing, setTesting] = useState(false);
   const mockEnabled = useAppStore((state) => state.mockProviderEnabled);
   const upsertServer = useAppStore((state) => state.upsertServer);
   const setError = useAppStore((state) => state.setError);
+  const selectServer = useAppStore((state) => state.selectServer);
 
   const useSimulation = () => setForm({
     name: "Training server",
@@ -40,6 +43,7 @@ export function ServerForm({ onCreated, compact = false }: { onCreated?(): void;
     try {
       const server = await window.rcc.createServer(form);
       upsertServer(server);
+      await selectServer(server.id);
       setForm(INITIAL_FORM);
       onCreated?.();
     } catch (error) {
@@ -66,6 +70,8 @@ export function ServerForm({ onCreated, compact = false }: { onCreated?(): void;
         <label className="field"><span>Player token</span><input required type="password" inputMode="numeric" value={form.playerToken} onChange={(e) => setForm({ ...form, playerToken: e.target.value })} placeholder="Pairing token" /></label>
       </div>
       <div className="form-security"><LockKeyhole size={14} /><span>Pairing credentials are encrypted with Windows and remain in the main process.</span></div>
+      {form.provider === "live" && <div className="pairing-actions"><button type="button" onClick={() => void window.rcc.openExternal("https://wiki.facepunch.com/rust/rust-companion-server")}><CircleHelp size={14} /> Pairing & firewall guide</button><button type="button" disabled={testing || !form.address || !form.port} onClick={() => { setTesting(true); void window.rcc.testEndpoint(form.address, form.port).then((result) => setTestResult(result)).catch((error) => setTestResult({ reachable: false, message: error instanceof Error ? error.message : "Test failed" })).finally(() => setTesting(false)); }}><Network size={14} /> {testing ? "Testing…" : "Test companion port"}</button></div>}
+      {testResult && <div className={`endpoint-result ${testResult.reachable ? "good" : "bad"}`}>{testResult.message}</div>}
       <div className="form-options">
         <label><input type="checkbox" checked={form.favorite} onChange={(e) => setForm({ ...form, favorite: e.target.checked })} /> Favorite</label>
         <label><input type="checkbox" checked={form.autoConnect} onChange={(e) => setForm({ ...form, autoConnect: e.target.checked })} /> Connect on launch</label>

@@ -17,11 +17,14 @@ describe("App", () => {
         health: { database: "healthy", rustplus: "idle", scheduler: "idle", notificationQueue: "idle", checkedAt: new Date().toISOString() },
       }),
       updateSettings: vi.fn(), createServer: vi.fn(), connectServer: vi.fn(), disconnectServer: vi.fn(),
-      archiveServer: vi.fn(), deleteServer: vi.fn(), selectServer: vi.fn(), getTelemetry: vi.fn(),
+      archiveServer: vi.fn(), favoriteServer: vi.fn(), testEndpoint: vi.fn(), deleteServer: vi.fn(), selectServer: vi.fn(), getTelemetry: vi.fn(),
+      getOperations: vi.fn().mockResolvedValue(null), executeCommand: vi.fn(),
+      getWorkspace: vi.fn().mockResolvedValue({ pins: [], routes: [], zones: [], devices: [], cameras: [], memberProfiles: {}, tasks: [], notes: [], checklists: [], shoppingList: [], shopFavorites: [], itemWatchlist: [], chatTemplates: [], automationRules: [], mutedChat: false, quietHours: { enabled: false, start: "22:00", end: "07:00" }, automationPaused: false, activity: [], positionHistory: [] }),
+      saveWorkspace: vi.fn(), exportData: vi.fn(), importData: vi.fn(), setAlwaysOnTop: vi.fn(), showNotification: vi.fn(), sendWebhook: vi.fn(), openExternal: vi.fn(), openPanelWindow: vi.fn(),
       onAppEvent: vi.fn().mockReturnValue(() => undefined),
       getUpdateState: vi.fn().mockResolvedValue({
         phase: "disabled", currentVersion: "0.2.0", availableVersion: null,
-        progress: null, message: "Update checks are available in packaged builds", canAutoUpdate: false,
+        progress: null, message: "Update checks are available in packaged builds", canAutoUpdate: false, releaseNotes: null,
       }),
       checkForUpdates: vi.fn(), downloadUpdate: vi.fn(), installUpdate: vi.fn(), openReleases: vi.fn(),
       onUpdateState: vi.fn().mockReturnValue(() => undefined),
@@ -31,7 +34,7 @@ describe("App", () => {
   it("renders an honest empty dashboard without sample server values", async () => {
     render(<HashRouter><App /></HashRouter>);
     expect(await screen.findByText("Pair a server to begin")).toBeInTheDocument();
-    expect(screen.getByText(/No map or player data is generated locally/)).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Monuments/ }).every((button) => button.hasAttribute("disabled"))).toBe(true);
+    expect(screen.getByText(/never invents live player or map data/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Map layers" })).toBeDisabled();
   });
 });
