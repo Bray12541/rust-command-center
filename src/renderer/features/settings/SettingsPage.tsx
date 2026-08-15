@@ -1,0 +1,14 @@
+import { BellRing, Eye, HardDrive, MonitorCog, Power, ShieldCheck } from "lucide-react";
+import type { ReactNode } from "react";
+import { Panel } from "../../design-system/Panel";
+import { useAppStore } from "../../stores/appStore";
+import { PageHeading } from "../common/PageHeading";
+
+export function SettingsPage() {
+  const settings = useAppStore((state) => state.settings)!;
+  const update = useAppStore((state) => state.updateSettings);
+  return <div className="page-stack"><PageHeading eyebrow="LOCAL CONFIGURATION" title="Settings" description="Persistent application preferences. Sensitive credentials are managed separately and never shown here." /><div className="settings-grid"><Panel title="Application" eyebrow="WINDOWS"><Setting icon={Power} title="Launch at startup" description="Start RCC when you sign in to Windows"><Toggle checked={settings.launchAtStartup} onChange={(value) => void update({ launchAtStartup: value })} /></Setting><Setting icon={MonitorCog} title="Close behavior" description="Keep background server monitoring active"><select value={settings.closeBehavior} onChange={(e) => void update({ closeBehavior: e.target.value as "tray" | "exit" | "ask" })}><option value="tray">Close to tray</option><option value="exit">Exit completely</option></select></Setting><Setting icon={Eye} title="Compact navigation" description="Collapse the sidebar to icons"><Toggle checked={settings.sidebarCollapsed} onChange={(value) => void update({ sidebarCollapsed: value })} /></Setting></Panel><Panel title="Privacy & alerts" eyebrow="LOCAL-FIRST"><Setting icon={BellRing} title="Desktop notifications" description="Allow RCC to display native alerts"><Toggle checked={settings.desktopNotifications} onChange={(value) => void update({ desktopNotifications: value })} /></Setting><Setting icon={HardDrive} title="Team position history" description="Off by default; no history is retained"><Toggle checked={settings.teamLocationHistory} onChange={(value) => void update({ teamLocationHistory: value })} /></Setting><Setting icon={ShieldCheck} title="Application analytics" description="No remote product telemetry is sent"><span className="locked-setting">Always off</span></Setting></Panel></div></div>;
+}
+
+function Setting({ icon: Icon, title, description, children }: { icon: typeof Power; title: string; description: string; children: ReactNode }) { return <div className="setting-row"><div className="setting-icon"><Icon size={17} /></div><div><strong>{title}</strong><span>{description}</span></div><div className="setting-control">{children}</div></div>; }
+function Toggle({ checked, onChange }: { checked: boolean; onChange(value: boolean): void }) { return <button role="switch" aria-checked={checked} className={`toggle ${checked ? "on" : ""}`} onClick={() => onChange(!checked)}><span /></button>; }
