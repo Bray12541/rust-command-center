@@ -68,7 +68,7 @@ Install the NSIS build once to receive future releases inside the app. Installed
 
 Portable executables cannot safely replace themselves while running, so portable mode links to the GitHub Releases page instead. Use the installer for the no-redownload update experience.
 
-Release builds generate `latest.yml` and an installer block map beside the executables. Push a version tag such as `v0.2.0` to run the Windows release workflow. It creates a draft GitHub release; review the matching section in [CHANGELOG.md](CHANGELOG.md), add signing credentials when available, and publish the draft. Players receive the release only after it is published.
+Release builds generate `latest.yml` and an installer block map beside the executables. For each version, create a matching GitHub release and upload the installer, installer block map, portable executable, and `latest.yml`. Review the matching section in [CHANGELOG.md](CHANGELOG.md), add signing credentials when available, and publish the release. Players receive the release only after it is published.
 
 ## Architecture
 
