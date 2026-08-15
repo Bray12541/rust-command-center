@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const colorThemeSchema = z.enum(["dark", "system"]);
+export const colorThemeSchema = z.enum(["dark", "light", "high-contrast", "system"]);
 export const profilePresetSchema = z.enum(["solo", "small-group", "clan", "server-owner"]);
 export const closeBehaviorSchema = z.enum(["tray", "exit", "ask"]);
 
@@ -14,6 +14,12 @@ export const appSettingsSchema = z.object({
   launchAtStartup: z.boolean(),
   sidebarCollapsed: z.boolean(),
   teamLocationHistory: z.boolean(),
+  streamerMode: z.boolean().default(false),
+  colorblindMarkers: z.boolean().default(false),
+  uiScale: z.number().min(0.8).max(1.4).default(1),
+  compactDensity: z.boolean().default(false),
+  updateChannel: z.enum(["stable", "beta"]).default("stable"),
+  skippedUpdateVersion: z.string().nullable().default(null),
 });
 
 export const settingsPatchSchema = appSettingsSchema.partial().strict();
@@ -31,4 +37,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   launchAtStartup: false,
   sidebarCollapsed: false,
   teamLocationHistory: false,
+  streamerMode: false,
+  colorblindMarkers: false,
+  uiScale: 1,
+  compactDensity: false,
+  updateChannel: "stable",
+  skippedUpdateVersion: null,
 };

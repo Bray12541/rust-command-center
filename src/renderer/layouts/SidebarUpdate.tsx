@@ -9,6 +9,7 @@ const initialState: UpdateState = {
   progress: null,
   message: "Ready to check for updates",
   canAutoUpdate: false,
+  releaseNotes: null,
 };
 
 export function SidebarUpdate({ collapsed }: { collapsed: boolean }) {
@@ -60,7 +61,7 @@ export function SidebarUpdate({ collapsed }: { collapsed: boolean }) {
             : "View releases";
 
   return (
-    <button className={`sidebar-update update-${state.phase}`} onClick={() => void act()} disabled={working || ["checking", "downloading"].includes(state.phase)} title={collapsed ? state.message : undefined}>
+    <button className={`sidebar-update update-${state.phase}`} onClick={() => void act()} disabled={working || ["checking", "downloading"].includes(state.phase)} title={state.releaseNotes ?? (collapsed ? state.message : undefined)}>
       <span className="sidebar-update-icon"><Icon size={17} className={["checking", "downloading"].includes(state.phase) ? "spin" : ""} /></span>
       {!collapsed && <span className="sidebar-update-copy"><strong>{label}</strong><small>{state.message}</small>{state.phase === "downloading" && <i style={{ width: `${state.progress ?? 0}%` }} />}</span>}
       {!collapsed && state.phase === "available" && <span className="update-dot" />}

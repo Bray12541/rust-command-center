@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { appSettingsSchema } from "../schemas/settings";
 import { serverProfileSchema } from "../schemas/server";
+import { operationsSnapshotSchema } from "./operations";
 
 export const serverTelemetrySchema = z.object({
   serverId: z.string().uuid(),
@@ -9,9 +10,21 @@ export const serverTelemetrySchema = z.object({
   maxPlayers: z.number().int().positive().nullable(),
   queuedPlayers: z.number().int().nonnegative().nullable(),
   mapSize: z.number().int().positive().nullable(),
+  mapName: z.string().nullable(),
+  mapSeed: z.number().int().nullable(),
+  headerImage: z.string().nullable(),
+  logoImage: z.string().nullable(),
+  websiteUrl: z.string().nullable(),
   wipeTime: z.string().datetime().nullable(),
   rustTime: z.string().nullable(),
+  rustTimeDecimal: z.number().min(0).max(24).nullable(),
+  sunrise: z.number().min(0).max(24).nullable(),
+  sunset: z.number().min(0).max(24).nullable(),
+  dayLengthMinutes: z.number().positive().nullable(),
   latencyMs: z.number().nonnegative().nullable(),
+  connectedAt: z.string().datetime().nullable(),
+  reconnectCount: z.number().int().nonnegative(),
+  connectionQuality: z.enum(["excellent", "good", "fair", "poor", "offline"]),
   source: z.enum(["live", "simulation"]),
   observedAt: z.string().datetime(),
 });
@@ -43,6 +56,18 @@ export const appEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("server.telemetry"),
     telemetry: serverTelemetrySchema,
+    timestamp: z.string().datetime(),
+  }),
+  z.object({
+    type: z.literal("server.operations"),
+    snapshot: operationsSnapshotSchema,
+    timestamp: z.string().datetime(),
+  }),
+  z.object({
+    type: z.literal("camera.frame"),
+    serverId: z.string().uuid(),
+    cameraId: z.string(),
+    imageDataUrl: z.string().startsWith("data:image/png;base64,"),
     timestamp: z.string().datetime(),
   }),
   z.object({

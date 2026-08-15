@@ -4,6 +4,7 @@ import { IPC_CHANNELS, type RustCommandCenterApi } from "../shared/contracts/ipc
 import { appSettingsSchema } from "../shared/schemas/settings";
 import { serverProfileSchema } from "../shared/schemas/server";
 import { updateStateSchema } from "../shared/contracts/update";
+import { operationsSnapshotSchema, rustPlusCommandSchema, workspaceDocumentSchema } from "../shared/contracts/operations";
 
 const api: RustCommandCenterApi = {
   getBootstrap: async () => bootstrapResponseSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.bootstrap)),
@@ -17,6 +18,8 @@ const api: RustCommandCenterApi = {
     serverProfileSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.disconnectServer, { serverId })),
   archiveServer: async (serverId, archived) =>
     serverProfileSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.archiveServer, { serverId, archived })),
+  favoriteServer: async (serverId, favorite) => serverProfileSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.favoriteServer, { serverId, favorite })),
+  testEndpoint: async (address, port) => await ipcRenderer.invoke(IPC_CHANNELS.testEndpoint, { address, port }),
   deleteServer: async (serverId) => {
     await ipcRenderer.invoke(IPC_CHANNELS.deleteServer, { serverId });
   },
@@ -26,6 +29,25 @@ const api: RustCommandCenterApi = {
     const response = await ipcRenderer.invoke(IPC_CHANNELS.getTelemetry, { serverId });
     return response === null ? null : serverTelemetrySchema.parse(response);
   },
+  getOperations: async (serverId) => {
+    const response = await ipcRenderer.invoke(IPC_CHANNELS.getOperations, { serverId });
+    return response === null ? null : operationsSnapshotSchema.parse(response);
+  },
+  executeCommand: async (serverId, command) => {
+    await ipcRenderer.invoke(IPC_CHANNELS.executeCommand, { serverId, command: rustPlusCommandSchema.parse(command) });
+  },
+  getWorkspace: async (serverId) => workspaceDocumentSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.getWorkspace, { serverId })),
+  saveWorkspace: async (serverId, document) => workspaceDocumentSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.saveWorkspace, { serverId, document })),
+  exportData: async (serverId) => Boolean(await ipcRenderer.invoke(IPC_CHANNELS.exportData, { serverId })),
+  importData: async (serverId) => {
+    const response = await ipcRenderer.invoke(IPC_CHANNELS.importData, { serverId });
+    return response === null ? null : workspaceDocumentSchema.parse(response);
+  },
+  setAlwaysOnTop: async (value) => { await ipcRenderer.invoke(IPC_CHANNELS.setAlwaysOnTop, { value }); },
+  showNotification: async (title, body) => { await ipcRenderer.invoke(IPC_CHANNELS.showNotification, { title, body }); },
+  sendWebhook: async (url, payload) => { await ipcRenderer.invoke(IPC_CHANNELS.sendWebhook, { url, payload }); },
+  openExternal: async (url) => { await ipcRenderer.invoke(IPC_CHANNELS.openExternal, { url }); },
+  openPanelWindow: async (panel) => { await ipcRenderer.invoke(IPC_CHANNELS.openPanelWindow, { panel }); },
   onAppEvent: (listener) => {
     const handler = (_event: Electron.IpcRendererEvent, rawEvent: unknown) => {
       const parsed = appEventSchema.safeParse(rawEvent);

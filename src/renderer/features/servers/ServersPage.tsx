@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Archive, Cable, Plus, RefreshCw, Server, Trash2, Unplug } from "lucide-react";
+import { Archive, Cable, Plus, RefreshCw, Server, Star, Trash2, Unplug } from "lucide-react";
 import { Button } from "../../design-system/Button";
 import { EmptyState } from "../../design-system/EmptyState";
 import { Panel } from "../../design-system/Panel";
@@ -43,6 +43,7 @@ export function ServersPage() {
             </button>
             <div className="server-row-meta"><span>Last packet</span><strong>{server.lastPacketAt ? new Date(server.lastPacketAt).toLocaleString() : "Never"}</strong></div>
             <div className="server-row-actions">
+              <Button compact variant="ghost" onClick={() => void run(server.id, async () => upsert(await window.rcc.favoriteServer(server.id, !server.favorite)))} disabled={working === server.id} title={server.favorite ? "Remove favorite" : "Make favorite"}><Star size={14} fill={server.favorite ? "currentColor" : "none"} /></Button>
               {server.status === "CONNECTED" ? <Button compact onClick={() => void run(server.id, async () => upsert(await window.rcc.disconnectServer(server.id)))} disabled={working === server.id}><Unplug size={14} /> Disconnect</Button> : <Button compact onClick={() => void run(server.id, async () => upsert(await window.rcc.connectServer(server.id)))} disabled={working === server.id}>{server.status === "ERROR" ? <RefreshCw size={14} /> : <Cable size={14} />} Connect</Button>}
               <Button compact variant="ghost" onClick={() => void run(server.id, async () => upsert(await window.rcc.archiveServer(server.id, true)))} disabled={working === server.id}><Archive size={14} /> Archive</Button>
               <Button compact variant="danger" onClick={() => void deleteServer(server.id, server.name)} disabled={working === server.id}><Trash2 size={14} /></Button>

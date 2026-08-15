@@ -2,6 +2,8 @@ import { app } from "electron";
 import { startApplication, type RunningApplication } from "./bootstrap/application";
 import { createLogger } from "./logging/logger";
 
+if (!app.isPackaged && process.env.RCC_E2E_USER_DATA) app.setPath("userData", process.env.RCC_E2E_USER_DATA);
+
 const hasInstanceLock = app.requestSingleInstanceLock();
 let running: RunningApplication | null = null;
 

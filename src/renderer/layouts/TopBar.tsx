@@ -13,8 +13,8 @@ export function TopBar({ onOpenCommands }: { onOpenCommands(): void }) {
   const setError = useAppStore((state) => state.setError);
   const server = useSelectedServer();
   const [working, setWorking] = useState(false);
-  const isMap = ["/", "/map"].includes(location.pathname);
-  const pageName = isMap ? "Live map" : navigation.find((item) => item.path === location.pathname)?.label ?? "Workspace";
+  const isMap = !["/servers", "/settings", "/diagnostics", "/help", "/logs"].includes(location.pathname);
+  const pageName = isMap ? "Operations map" : navigation.find((item) => item.path === location.pathname)?.label ?? "Workspace";
 
   const toggleConnection = async () => {
     if (!server || working) return;
@@ -47,7 +47,7 @@ export function TopBar({ onOpenCommands }: { onOpenCommands(): void }) {
         </button>
       )}
       <div className="topbar-actions">
-        {isMap && <button className="topbar-layer-button" disabled title="Map layers become available with live map data"><Layers3 size={15} /> Layers</button>}
+        {isMap && <span className="topbar-map-hint"><Layers3 size={14} /> Map tools are docked below</span>}
         <button className="command-trigger" onClick={onOpenCommands}><Search size={15} /><span>Search</span><kbd>Ctrl K</kbd></button>
       </div>
       {server?.provider === "mock" && <div className="toolbar-simulation">Training simulation</div>}

@@ -4,6 +4,23 @@ All notable changes to Rust Command Center are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-08-15
+
+### Added
+
+- Added the real Rust+ map image, smooth pan/zoom, grid coordinates, monuments, ocean boundary, team/map notes, live world markers, local pins, measurements, route drawing, layer controls, fullscreen, annotated PNG export, historical heatmaps, and an always-on-top mini-map window.
+- Added typed live adapters for team and clan rosters, team/clan chat, map markers, vending sell orders, smart switches, smart alarms, storage monitors, clan MOTD, leader promotion, and reconstructed CCTV/PTZ camera frames.
+- Added server header/logo/link, map seed/name, wipe timing, day/night cycle, connection quality, latency, connection duration, reconnect count, favorites, endpoint testing, duplicate detection, and a combined multi-server summary.
+- Added team roles and tasks, chat search/templates/export/pop-out, clan details, device pairing/control/inventory, shop search/watch lists, camera controls/snapshots, event monitoring zones, local notes/checklists/shopping/calculators, workspace backup/import, and privacy/accessibility preferences.
+- Added guarded local automation for world events, alarms, team changes, and mentions with cooldowns, quiet hours, emergency pause, native notifications, team/clan messages, smart-switch actions, and HTTPS/Discord webhooks.
+- Added stable/beta update preferences, release notes in update state, skipped-version support, and retained download progress/restart-to-install behavior.
+
+### Security and reliability
+
+- Added a serialized Rust+ token budget matching the documented per-player request limit and higher costs for map/chat requests.
+- Kept camera turret fire/reload unavailable, confirmed sensitive leader/MOTD/device actions, restricted webhooks to HTTPS, validated backup imports, and continued OS-encrypted credential storage.
+- Added native disconnect/reconnect notifications and bounded per-server activity, automation, and optional team-position history.
+
 ## [0.2.0] - 2026-08-15
 
 ### Added
@@ -42,3 +59,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 [0.1.1]: https://github.com/Bray12541/rust-command-center/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Bray12541/rust-command-center/releases/tag/v0.1.0
 [0.2.0]: https://github.com/Bray12541/rust-command-center/compare/v0.1.1...v0.2.0
+[0.3.0]: https://github.com/Bray12541/rust-command-center/compare/v0.2.0...v0.3.0

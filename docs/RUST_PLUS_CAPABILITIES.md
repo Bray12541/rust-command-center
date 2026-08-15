@@ -1,40 +1,27 @@
 # Rust+ Capabilities
 
-RCC uses an unofficial protocol implementation. Facepunch does not publish a supported public SDK for this desktop application. Protocol behavior can change when Rust updates.
+RCC uses the unofficial maintained [`@rustwirebot/rustplus.js`](https://github.com/rik8181/rustwirebot-rustplus.js) protocol adapter. Rust+ behavior can change with game updates, so all network fields are treated as optional and untrusted.
 
-The current adapter is based on [`@rustwirebot/rustplus.js`](https://www.npmjs.com/package/@rustwirebot/rustplus.js), a maintained fork of [`@liamcottle/rustplus.js`](https://github.com/liamcottle/rustplus.js). The upstream project documents server address/app port plus player ID/token pairing, server info, Rust time, map and markers, team data/chat, entity state/control, and camera frames.
+## Exposed in 0.3
 
-## Implemented and exposed
+| Capability | RCC behavior |
+| --- | --- |
+| Server info/time | Normalized identity, population, queue, map, wipe, clock, sunrise/sunset, and latency |
+| Map | Cached JPEG map, dimensions, ocean margin, monuments, coordinates, local annotations |
+| Map markers | Players/events/vending markers with sell orders when returned |
+| Team | Leader, roster, online/alive state, positions, timestamps, notes, promotion request |
+| Team chat | History, live broadcasts, search, templates, export, and rate-limited send |
+| Clan | MOTD, roles, members, invites, clan chat, send, and permission-enforced MOTD request |
+| Entities | Switch/alarm/storage state, item contents, protection fields, broadcasts, and verified set value |
+| Cameras | Manual IDs, reconstructed PNG frames, PTZ move/zoom, and snapshots |
 
-| Capability | Service status | UI status |
-| --- | --- | --- |
-| Direct server connection | Implemented | Server Manager |
-| Independent reconnect/backoff | Implemented | Status and Diagnostics |
-| Server name/population/queue/map size | Implemented when returned | Dashboard |
-| Rust in-game time | Implemented when returned | Dashboard |
-| Rust+ request latency | Implemented | Dashboard; explicitly not in-game ping |
-| Manual pairing value entry | Implemented | Onboarding and Server Manager |
-| FCM registration/listening | External upstream CLI | Documented; not claimed as in-app |
+The provider serializes requests through a local 25-token budget replenished at three tokens per second. Map requests cost five; team chat sends cost two. Static maps are cached per connection and configured entity polls are bounded.
 
-Null or missing protocol fields remain unavailable. RCC does not infer population, queue, wipe time, or Rust time.
+## Known limits
 
-## Supported upstream but not yet exposed
-
-- map image and coordinate data
-- map markers, including vending markers and dynamic events
-- team membership, position, and chat
-- entity subscriptions, smart switches, alarms, and storage monitors
-- Rust+ camera frame/control protocol
-
-These capabilities require typed adapters, request scheduling, persistence, and UI verification before RCC enables them.
-
-## Known limitations
-
-- Rust+ connection and per-player request limits apply. The upstream project documents token-bucket limits; future polling must centralize priority, coalescing, and backoff.
-- Queue information and individual fields may be absent on a server.
-- Camera frames are not a conventional video stream and RCC will not present them as one.
-- Team presence must remain unknown unless the protocol provides enough evidence.
-- Device actions must be confirmed by a protocol response and, where possible, a subsequent state observation before UI reports success.
-- Pairing credentials can expire or change after a server wipe/re-pair.
-
-The library adapter is isolated because dependencies, schemas, and optional fields have historically changed. Protocol responses are treated as untrusted network input.
+- Rust+ must be paired and the server Companion port must be reachable.
+- Missing protocol fields remain unknown; RCC does not fabricate them.
+- Camera frames are reconstructed samples, not conventional video.
+- Camera IDs cannot be universally discovered.
+- Turret fire/reload is intentionally not exposed.
+- Rust+ does not reveal enemy positions, building health, raid attribution, arbitrary inventories, or RCON powers.

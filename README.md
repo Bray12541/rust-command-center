@@ -4,7 +4,7 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 Rust Command Center (RCC) is a local-first Windows operations desktop for one or more Rust+ servers. It is an original, unofficial project and is not affiliated with Facepunch Studios.
 
-The repository currently contains the production foundation and the first usable Rust+ vertical slice:
+The repository contains a usable, map-focused Rust+ operations workspace:
 
 - Electron main/preload/renderer isolation with a strict IPC allowlist
 - React, TypeScript, Vite, Tailwind CSS, Zustand, and Zod
@@ -12,12 +12,15 @@ The repository currently contains the production foundation and the first usable
 - Windows-encrypted Rust+ pairing credentials
 - independent live Rust+ connection sessions with heartbeat, retry, backoff, and jitter
 - a maintained Rust+ protocol adapter and a visibly labeled development simulator
-- onboarding, server management, server switching, dashboard telemetry, diagnostics, settings, and tray lifecycle
-- an original map-first desktop workspace with compact navigation, server/device context, map controls, and a local event console
+- onboarding, server management, favorites, fast switching, combined status, diagnostics, settings, and tray lifecycle
+- live map/monuments/world events, teams, team and clan chat, vending intelligence, devices, storage, and CCTV/PTZ support
+- local pins/routes/zones, team tasks, notes, checklists, shopping, calculators, event history, and JSON backup/import
+- guarded automation with native notifications, chat/device actions, quiet hours, cooldowns, and HTTPS webhooks
+- a single collapsible sidebar, full map canvas, bottom operations dock, and contextual drawers
 - NSIS and portable Windows build targets
-- In-app update checks, download progress, and restart-to-install for installed builds
+- in-app update checks, channels, release information, download progress, and restart-to-install for installed builds
 
-Map, team, devices, alerts, raid correlation, automations, Discord, vending intelligence, wipe planning, and analytics are later phases. Their navigation surfaces explicitly report that they are unavailable; they do not display fabricated data or nonfunctional controls.
+RCC displays only fields returned by Rust+ or data intentionally created in the local workspace. It does not infer enemy positions, building health, raid attribution, arbitrary inventories, or server-administrator powers.
 
 ## Requirements
 
@@ -64,7 +67,7 @@ Outputs go to `release/`. The builder produces an assisted NSIS installer and a 
 
 ## In-app updates
 
-Install the NSIS build once to receive future releases inside the app. Installed builds check the public GitHub release feed, let the player download an update, display progress, and ask before restarting to install it.
+Install the NSIS build once to receive future releases inside the app. Installed builds check the public GitHub release feed, support stable/beta preferences and skipped versions, display release information and progress, and ask before restarting to install it.
 
 Portable executables cannot safely replace themselves while running, so portable mode links to the GitHub Releases page instead. Use the installer for the no-redownload update experience.
 
@@ -84,7 +87,7 @@ See:
 
 ## Privacy
 
-RCC requires no product account and sends no application analytics. Pairing credentials are encrypted with the operating system. Crash dumps are not uploaded. Live Rust+ traffic still goes to the paired Rust server, and optional integrations added later will have their own explicit disclosures.
+RCC requires no product account and sends no application analytics. Pairing credentials are encrypted with the operating system. Crash dumps are not uploaded. Live Rust+ traffic goes to the paired Rust server; HTTPS webhooks run only when the player creates an enabled automation rule.
 
 ## Screenshots
 
