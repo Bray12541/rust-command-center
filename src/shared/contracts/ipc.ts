@@ -3,6 +3,7 @@ import type { CreateServerRequest, ServerProfile } from "../schemas/server";
 import type { AppSettings, SettingsPatch } from "../schemas/settings";
 import type { UpdateState } from "./update";
 import type { OperationsSnapshot, RustPlusCommand, WorkspaceDocument } from "./operations";
+import type { ConnectedServicesConfig, InstalledExtension, ServerOwnerConfig, SuiteState } from "./connectedServices";
 
 export const IPC_CHANNELS = {
   bootstrap: "app:bootstrap",
@@ -34,6 +35,23 @@ export const IPC_CHANNELS = {
   installUpdate: "updates:install",
   openReleases: "updates:open-releases",
   updateStateChanged: "updates:state-changed",
+  getSuiteState: "suite:state",
+  saveConnectedServices: "suite:connected:save",
+  saveServerOwner: "suite:owner:save",
+  testConnectedService: "suite:service:test",
+  profileSync: "suite:profile-sync",
+  sharedWorkspaceSync: "suite:workspace-sync",
+  sendDiscordMessage: "suite:discord:send",
+  chooseDirectory: "system:choose-directory",
+  rconConnect: "suite:rcon:connect",
+  rconDisconnect: "suite:rcon:disconnect",
+  rconCommand: "suite:rcon:command",
+  ownerAction: "suite:owner:action",
+  readServerConfig: "suite:owner:config-read",
+  saveServerConfig: "suite:owner:config-save",
+  runServerBackup: "suite:owner:backup",
+  openExtensionsFolder: "suite:extensions:folder",
+  setExtensionEnabled: "suite:extensions:enabled",
 } as const;
 
 export interface RustCommandCenterApi {
@@ -66,4 +84,21 @@ export interface RustCommandCenterApi {
   installUpdate(): Promise<void>;
   openReleases(): Promise<void>;
   onUpdateState(listener: (state: UpdateState) => void): () => void;
+  getSuiteState(): Promise<SuiteState>;
+  saveConnectedServices(config: ConnectedServicesConfig, secrets?: Record<string, string>): Promise<SuiteState>;
+  saveServerOwner(config: ServerOwnerConfig, passwords?: Record<string, string>, bridgeToken?: string): Promise<SuiteState>;
+  testConnectedService(service: "discord" | "shared-workspace" | "telemetry" | "mobile" | "bridge"): Promise<string>;
+  profileSync(direction: "push" | "pull"): Promise<string>;
+  sharedWorkspaceSync(direction: "push" | "pull", serverId: string): Promise<string>;
+  sendDiscordMessage(message: string): Promise<void>;
+  chooseDirectory(title: string): Promise<string | null>;
+  rconConnect(profileId: string): Promise<void>;
+  rconDisconnect(profileId: string): Promise<void>;
+  rconCommand(profileId: string, command: string): Promise<number>;
+  ownerAction(profileId: string, action: "save" | "announce" | "kick" | "ban" | "unban" | "restart" | "plugins" | "performance", target?: string, reason?: string): Promise<number>;
+  readServerConfig(profileId: string): Promise<string>;
+  saveServerConfig(profileId: string, content: string): Promise<void>;
+  runServerBackup(profileId: string): Promise<string>;
+  openExtensionsFolder(): Promise<void>;
+  setExtensionEnabled(id: string, enabled: boolean, approvedPermissions: InstalledExtension["approvedPermissions"]): Promise<InstalledExtension[]>;
 }

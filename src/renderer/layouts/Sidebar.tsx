@@ -9,6 +9,8 @@ import {
   Settings2,
   MessageSquare,
   Wrench,
+  CloudCog,
+  ServerCog,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { type NavigationItem } from "../app/navigation";
@@ -58,6 +60,8 @@ export function Sidebar() {
       <div className="sidebar-bottom">
         <SidebarUpdate collapsed={collapsed} />
         <nav aria-label="System navigation">
+          <SidebarLink item={{ id: "services-link", label: "Services", path: "/integrations", icon: CloudCog, phase: 3 }} collapsed={collapsed} />
+          <SidebarLink item={{ id: "owner-link", label: "Server Owner", path: "/server-owner", icon: ServerCog, phase: 3 }} collapsed={collapsed} />
           <SidebarLink item={{ id: "servers-link", label: "Servers", path: "/servers", icon: Server, phase: 3 }} collapsed={collapsed} />
           <SidebarLink item={{ id: "settings-link", label: "Settings", path: "/settings", icon: Settings2, phase: 3 }} collapsed={collapsed} />
           <SidebarLink item={{ id: "help-link", label: "Help", path: "/help", icon: CircleHelp, phase: 3 }} collapsed={collapsed} />

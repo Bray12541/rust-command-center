@@ -49,6 +49,27 @@ export class CredentialVault {
     this.writeVault(vault);
   }
 
+  saveSecret(key: string, value: string): void {
+    if (!this.isAvailable()) throw new Error("Windows credential encryption is not available");
+    const vault = this.readVault();
+    vault[`secret:${key}`] = safeStorage.encryptString(value).toString("base64");
+    this.writeVault(vault);
+  }
+
+  getSecret(key: string): string | null {
+    if (!this.isAvailable()) return null;
+    const encoded = this.readVault()[`secret:${key}`];
+    if (!encoded) return null;
+    try { return safeStorage.decryptString(Buffer.from(encoded, "base64")); }
+    catch { return null; }
+  }
+
+  deleteSecret(key: string): void {
+    const vault = this.readVault();
+    delete vault[`secret:${key}`];
+    this.writeVault(vault);
+  }
+
   private readVault(): Record<string, string> {
     if (!fs.existsSync(this.filePath)) return {};
     try {

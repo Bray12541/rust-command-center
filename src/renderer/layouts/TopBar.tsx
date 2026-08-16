@@ -13,7 +13,7 @@ export function TopBar({ onOpenCommands }: { onOpenCommands(): void }) {
   const setError = useAppStore((state) => state.setError);
   const server = useSelectedServer();
   const [working, setWorking] = useState(false);
-  const isMap = !["/servers", "/settings", "/diagnostics", "/help", "/logs"].includes(location.pathname);
+  const isMap = !["/servers", "/settings", "/diagnostics", "/help", "/logs", "/integrations", "/server-owner"].includes(location.pathname);
   const pageName = isMap ? "Operations map" : navigation.find((item) => item.path === location.pathname)?.label ?? "Workspace";
 
   const toggleConnection = async () => {

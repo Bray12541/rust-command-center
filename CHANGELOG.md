@@ -4,6 +4,26 @@ All notable changes to Rust Command Center are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-08-15
+
+### Added
+
+- Added an opt-in Discord bot with outbound alerts, role-restricted status commands, mention suppression, and Windows-encrypted bot tokens.
+- Added AES-256-GCM encrypted profile synchronization through a user-controlled folder, including Rust+ profiles, encrypted pairing material, settings, and local workspaces.
+- Added a read-only, token-protected local mobile/PWA dashboard for the current PC or private LAN.
+- Added explicit push/pull shared team workspaces through a user-controlled HTTPS API with encrypted bearer tokens.
+- Added separately consented, sanitized analytics and error reporting through a configurable HTTPS collector.
+- Added declarative community extensions and themes with manifest validation, explicit permission approval, and no arbitrary extension JavaScript execution.
+- Added a separate Server Owner workspace with WebRCON console/logs, safe quick commands, announcements, moderation confirmations, local `server.cfg` editing with backups, full folder backups, restart/save/backup/wipe-preparation schedules, fleet status, and in-session performance charts.
+- Added a token-protected uMod/Oxide event receiver plus a working example plugin for raid, death, authorization, player, plugin, and performance events.
+
+### Security and reliability
+
+- Extended Windows-backed encrypted storage to Discord, sync, shared-workspace, telemetry, mobile, RCON, and plugin-bridge secrets.
+- Kept every remote or administrator integration disabled by default and isolated owner actions from the Rust+ player workspace.
+- Added RCON command validation, Steam-ID validation, escaped moderation reasons, explicit destructive confirmations, recoverable configuration writes, and source/destination checks for recursive backups.
+- Wipe preparation never deletes server data automatically; it backs up, saves, and announces before requiring a human administrator to perform the irreversible wipe.
+
 ## [0.3.0] - 2026-08-15
 
 ### Added
@@ -60,3 +80,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 [0.1.0]: https://github.com/Bray12541/rust-command-center/releases/tag/v0.1.0
 [0.2.0]: https://github.com/Bray12541/rust-command-center/compare/v0.1.1...v0.2.0
 [0.3.0]: https://github.com/Bray12541/rust-command-center/compare/v0.2.0...v0.3.0
+[0.4.0]: https://github.com/Bray12541/rust-command-center/compare/v0.3.0...v0.4.0

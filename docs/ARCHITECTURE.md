@@ -4,7 +4,7 @@
 
 RCC uses three security and responsibility boundaries:
 
-1. `src/main` owns Electron lifecycle, SQLite, encrypted credentials, Rust+ sockets, connection recovery, structured logs, diagnostics, and the system tray.
+1. `src/main` owns Electron lifecycle, SQLite, encrypted credentials, Rust+/Discord/RCON sockets, opt-in local HTTP listeners, connection recovery, structured logs, diagnostics, and the system tray.
 2. `src/preload` exposes only the frozen `RustCommandCenterApi`. It does not expose Node.js, Electron primitives, filesystem access, or arbitrary IPC.
 3. `src/renderer` renders validated application state. It never receives a player token and cannot open sockets or files directly.
 
@@ -34,14 +34,16 @@ The renderer uses one map-first operations workspace. The collapsible sidebar co
 
 Zustand stores transient renderer state plus validated copies of main-process data. Persistent settings remain authoritative in SQLite.
 
+Connected Services and Server Owner are separate full-page modules. The renderer can submit validated configuration and commands, but it never receives saved bot tokens, sync passphrases, bearer tokens, RCON passwords, or bridge tokens. `SuiteService` coordinates the main-process Discord client, encrypted synchronization, local PWA/bridge listeners, declarative extension manager, RCON sessions, backups, and fixed-operation scheduler.
+
 ## Startup order
 
 1. Acquire the single-instance lock.
 2. Open structured logging.
 3. Open SQLite and apply migrations.
-4. Construct repositories, vault, providers, and connection manager.
+4. Construct repositories, vault, providers, connection manager, and optional integration services.
 5. Create the secure window, tray, and IPC handlers.
-6. Restore auto-connect server sessions asynchronously.
+6. Restore opted-in Discord, local listener, RCON, and Rust+ sessions asynchronously.
 7. Lazy-load feature data when screens request it.
 
 ## Packaging

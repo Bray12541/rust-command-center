@@ -7,13 +7,15 @@
 - strict CSP with no remote renderer content
 - fixed IPC allowlist with Zod validation and per-renderer rate limiting
 - small frozen preload API; no raw Electron or Node handles
-- Windows-backed Electron `safeStorage` encryption for player IDs/tokens
+- Windows-backed Electron `safeStorage` encryption for Rust+, Discord, synchronization, telemetry, mobile, RCON, and bridge secrets
 - no secrets in SQLite server profiles or renderer DTOs
 - structured Pino logging with credential/token/password redaction
 - atomic credential-vault writes and no arbitrary renderer-selected paths
 - single-instance application lifecycle
 - development-only simulator rejected in packaged builds
-- no remote product telemetry, automatic crash upload, local HTTP API, shell command automation, game injection, or anti-cheat interaction
+- no remote product telemetry or sanitized error reporting without an explicit HTTPS endpoint and independent consent
+- local mobile and plugin-bridge HTTP listeners are disabled by default, token protected, payload limited, and intended only for loopback/private LAN use
+- no shell command automation, game injection, or anti-cheat interaction
 
 ## Threat model
 
@@ -21,7 +23,7 @@
 
 A renderer compromise could invoke only the exposed API. Schema validation, rate limits, narrow DTOs, sandboxing, and main-process authorization reduce impact. No browser permissions are granted and popup/navigation attempts are denied.
 
-### Leaked Rust+ or future Discord tokens
+### Leaked Rust+ or integration tokens
 
 Tokens stay encrypted at rest and out of renderer state/logs. A local attacker running as the same Windows user may still access the application or invoke Windows decryption; an optional session lock is a later defense. Credential rotation should replace one integration without resetting unrelated data.
 
@@ -37,9 +39,9 @@ Current windows deny popups and external navigation. A future URL-opening servic
 
 Protocol payloads are untrusted. Provider responses are normalized before persistence/UI. Services should enforce payload size and recursion limits as protocol coverage expands. Optional Discord/BattleMetrics failures must not affect Rust+ core services.
 
-### Dangerous automation loops
+### Dangerous automation loops and owner actions
 
-Automation is disabled until recursion depth, action count, per-entity/device rate limits, duplicate suppression, cooldowns, timeouts, circuit breakers, dry-run, and durable audit history exist. Arbitrary shell execution will not be an automation action.
+Player automation is guarded by cooldowns, quiet hours, a global pause, narrow typed actions, and Rust+ request limits. Server Owner schedules are separately enabled, use fixed operation types, require an active saved owner profile, and never execute arbitrary local shell commands. Wipe preparation does not delete files.
 
 ### Supply chain
 

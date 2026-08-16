@@ -1,0 +1,15 @@
+{
+  "id": "community.oxide-night",
+  "name": "Oxide Night",
+  "version": "1.0.0",
+  "description": "A darker community theme with a cool blue accent.",
+  "author": "RCC community example",
+  "permissions": ["theme"],
+  "theme": {
+    "accent": "#4f9ec2",
+    "background": "#080c0f",
+    "panel": "#10171b",
+    "text": "#e5edf1"
+  },
+  "links": []
+}

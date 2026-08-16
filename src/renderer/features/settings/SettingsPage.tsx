@@ -18,7 +18,7 @@ export function SettingsPage() {
       <Setting icon={BellRing} title="Desktop notifications" description="Allow native Windows event alerts"><Toggle checked={settings.desktopNotifications} onChange={(value) => void update({ desktopNotifications: value })} /></Setting>
       <Setting icon={HardDrive} title="Team position history" description="Opt in to retaining local movement history"><Toggle checked={settings.teamLocationHistory} onChange={(value) => void update({ teamLocationHistory: value })} /></Setting>
       <Setting icon={ShieldCheck} title="Streamer mode" description="Hide server addresses, names, and Steam IDs"><Toggle checked={settings.streamerMode} onChange={(value) => void update({ streamerMode: value })} /></Setting>
-      <Setting icon={ShieldCheck} title="Application analytics" description="No remote product telemetry is sent"><span className="locked-setting">Always off</span></Setting>
+      <Setting icon={ShieldCheck} title="Application analytics" description="Disabled unless explicitly configured in Connected Services"><span className="locked-setting">Opt-in only</span></Setting>
     </Panel>
     <Panel title="Appearance & accessibility" eyebrow="DISPLAY">
       <Setting icon={Palette} title="Color theme" description="Choose dark, light, system, or high contrast"><select value={settings.theme} onChange={(event) => void update({ theme: event.target.value as typeof settings.theme })}><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option><option value="high-contrast">High contrast</option></select></Setting>
