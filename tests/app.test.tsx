@@ -3,6 +3,7 @@ import { HashRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../src/renderer/app/App";
 import { DEFAULT_SETTINGS } from "../src/shared/schemas/settings";
+import { DEFAULT_CONNECTED_SERVICES, DEFAULT_SERVER_OWNER } from "../src/shared/contracts/connectedServices";
 
 describe("App", () => {
   beforeEach(() => {
@@ -28,6 +29,10 @@ describe("App", () => {
       }),
       checkForUpdates: vi.fn(), downloadUpdate: vi.fn(), installUpdate: vi.fn(), openReleases: vi.fn(),
       onUpdateState: vi.fn().mockReturnValue(() => undefined),
+      getSuiteState: vi.fn().mockResolvedValue({ connected: DEFAULT_CONNECTED_SERVICES, owner: DEFAULT_SERVER_OWNER, extensions: [], rconStatuses: {}, rconLines: [], ownerMetrics: [], ownerEvents: [], mobileUrl: null, bridgeUrl: null }), saveConnectedServices: vi.fn(), saveServerOwner: vi.fn(), testConnectedService: vi.fn(),
+      profileSync: vi.fn(), sharedWorkspaceSync: vi.fn(), sendDiscordMessage: vi.fn(), chooseDirectory: vi.fn(),
+      rconConnect: vi.fn(), rconDisconnect: vi.fn(), rconCommand: vi.fn(), ownerAction: vi.fn(), readServerConfig: vi.fn(),
+      saveServerConfig: vi.fn(), runServerBackup: vi.fn(), openExtensionsFolder: vi.fn(), setExtensionEnabled: vi.fn(),
     };
   });
 

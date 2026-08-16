@@ -1,7 +1,7 @@
 import {
   Activity, BellRing, Bot, Boxes, Calculator, Camera, ChartNoAxesCombined, CircleHelp,
   Clock3, CloudCog, Cog, DatabaseZap, Gauge, Map, MapPinned, MessageSquare, RadioTower,
-  ScrollText, Server, ShieldAlert, ShoppingCart, Siren, SquareKanban, Users, Workflow,
+  ScrollText, Server, ServerCog, ShieldAlert, ShoppingCart, Siren, SquareKanban, Users, Workflow,
   type LucideIcon,
 } from "lucide-react";
 
@@ -31,7 +31,8 @@ export const navigation: NavigationItem[] = [
   { id: "calculators", label: "Calculators", path: "/calculators", icon: Calculator, phase: 12, capability: "Calculators require a versioned game-data dataset" },
   { id: "analytics", label: "Analytics", path: "/analytics", icon: ChartNoAxesCombined, phase: 13, capability: "Charts appear only after real local telemetry exists" },
   { id: "discord", label: "Discord", path: "/discord", icon: Bot, phase: 9, capability: "Discord is optional and is not configured" },
-  { id: "integrations", label: "Integrations", path: "/integrations", icon: CloudCog, phase: 10, capability: "No external integrations are configured" },
+  { id: "integrations", label: "Connected Services", path: "/integrations", icon: CloudCog, phase: 3 },
+  { id: "server-owner", label: "Server Owner", path: "/server-owner", icon: ServerCog, phase: 3 },
   { id: "servers", label: "Servers", path: "/servers", icon: Server, phase: 3 },
   { id: "diagnostics", label: "Diagnostics", path: "/diagnostics", icon: Activity, phase: 3 },
   { id: "logs", label: "Logs", path: "/logs", icon: ScrollText, phase: 3, capability: "Log export and redacted viewing are being hardened" },

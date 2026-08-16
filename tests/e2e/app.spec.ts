@@ -12,6 +12,12 @@ test("packaged renderer bridge opens the map workspace instead of a black screen
     await expect(window.getByRole("navigation", { name: "Operations tools" })).toBeVisible();
     await window.getByRole("button", { name: "Events" }).click();
     await expect(window.getByText("Live world events")).toBeVisible();
+    await window.getByRole("link", { name: "Services" }).click();
+    await expect(window.getByRole("heading", { name: "Connected services" })).toBeVisible();
+    await expect(window.getByText("Discord bot", { exact: true })).toBeVisible();
+    await window.getByRole("link", { name: "Server Owner" }).click();
+    await expect(window.getByRole("heading", { name: "Server Owner mode" })).toBeVisible();
+    await expect(window.getByText("Administrator credentials can control your server.")).toBeVisible();
   } finally {
     await application.close();
     await fs.rm(userData, { recursive: true, force: true });

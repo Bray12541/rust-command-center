@@ -1,6 +1,6 @@
 # Implementation Status
 
-## Complete in 0.3
+## Complete through 0.4
 
 - secure Electron/React foundation, SQLite settings/workspaces, encrypted credentials, tray lifecycle, diagnostics, packaging, and installed-build updates
 - independent multi-server Rust+ sessions with heartbeat, reconnect/backoff/jitter, favorites, switching, endpoint tests, and combined status
@@ -12,6 +12,9 @@
 - manual camera IDs, reconstructed frames, PTZ movement/zoom, snapshots, and safe omission of turret fire/reload
 - event zones/history, native connection alerts, and guarded automations with cooldowns, quiet hours, emergency pause, chat/device actions, and HTTPS webhooks
 - local team tasks, notes, checklists, shopping, basic calculators, JSON workspace backup/import, privacy mode, themes, scale, and compact density
+- Discord alerts and restricted status commands, encrypted cross-device profile files, local mobile PWA, explicit shared-workspace push/pull, and separately consented sanitized reporting
+- declarative community extensions/themes with manifest schemas and permission approval
+- separate Server Owner mode with WebRCON, console/logs, moderation, safe configuration writes, backups, schedules, fleet status, performance samples, and an authenticated uMod/Oxide bridge
 
 ## Protocol-dependent or intentionally bounded
 
@@ -20,5 +23,5 @@
 - Calculators use explicitly labeled local values and should be checked after Rust balance updates.
 - Position history is opt-in and bounded locally.
 - “Raid” alerts can use alarms/explosion markers, but RCC cannot identify an attacker, explosive, target base, or damage from Rust+ alone.
-- Enemy tracking, building health, arbitrary inventories, combat logs, and RCON administration are not claimed.
+- Enemy tracking, building health, arbitrary inventories, and combat logs are unavailable from Rust+ alone. Owner-only RCON and authenticated plugin features require credentials for a server the user controls.
 - Steam/FCM registration remains the maintained upstream helper flow; RCC supplies a guided manual form, encrypted storage, duplicate detection, and a Companion-port test.

@@ -19,8 +19,11 @@ The repository contains a usable, map-focused Rust+ operations workspace:
 - a single collapsible sidebar, full map canvas, bottom operations dock, and contextual drawers
 - NSIS and portable Windows build targets
 - in-app update checks, channels, release information, download progress, and restart-to-install for installed builds
+- opt-in Discord alerts and role-gated status commands, encrypted profile sync, local mobile PWA, and shared workspace synchronization
+- permission-gated declarative community extensions and themes with no arbitrary plugin JavaScript
+- a separately enabled Server Owner workspace for WebRCON, fleet health, moderation, local configuration/backups, schedules, performance, and uMod/Oxide events
 
-RCC displays only fields returned by Rust+ or data intentionally created in the local workspace. It does not infer enemy positions, building health, raid attribution, arbitrary inventories, or server-administrator powers.
+RCC displays only fields returned by Rust+, explicitly configured Server Owner connections, authenticated plugin events, or data intentionally created in the local workspace. It does not turn player pairing into administrator access or infer unavailable live data.
 
 ## Requirements
 
@@ -83,11 +86,13 @@ See:
 - [Rust+ capabilities](docs/RUST_PLUS_CAPABILITIES.md)
 - [Security and threat model](docs/SECURITY.md)
 - [Implementation status](docs/IMPLEMENTATION_STATUS.md)
+- [Connected services](docs/CONNECTED_SERVICES.md)
+- [Server Owner mode](docs/SERVER_OWNER.md)
 - [Contributing](CONTRIBUTING.md)
 
 ## Privacy
 
-RCC requires no product account and sends no application analytics. Pairing credentials are encrypted with the operating system. Crash dumps are not uploaded. Live Rust+ traffic goes to the paired Rust server; HTTPS webhooks run only when the player creates an enabled automation rule.
+RCC requires no product account. Pairing and integration secrets are encrypted with the operating system. Analytics and sanitized error reporting are independently disabled by default and require an explicit endpoint and consent. Live Rust+ traffic goes to the paired Rust server; Discord, synchronization, webhooks, mobile access, RCON, and plugin bridging run only when the player configures and enables them.
 
 ## Screenshots
 

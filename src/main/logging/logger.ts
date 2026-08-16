@@ -31,7 +31,7 @@ export function createLogger(userDataPath: string, isDevelopment: boolean): Logg
       level: isDevelopment ? "debug" : "info",
       base: { product: "rust-command-center", pid: process.pid },
       redact: {
-        paths: ["playerToken", "credentials", "token", "password", "authorization"],
+        paths: ["playerToken", "credentials", "token", "password", "authorization", "discordToken", "profilePassphrase", "sharedWorkspaceToken", "telemetryToken", "mobileToken", "bridgeToken", "*.playerToken", "*.credentials", "*.token", "*.password", "*.authorization"],
         censor: "[REDACTED]",
       },
       timestamp: pino.stdTimeFunctions.isoTime,

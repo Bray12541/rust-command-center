@@ -13,6 +13,8 @@ import { CredentialVault } from "../security/credentialVault";
 import { TrayService } from "../tray/trayService";
 import { createMainWindow } from "../windows/mainWindow";
 import { UpdateService } from "../updates/updateService";
+import { SuiteRepository } from "../repositories/suiteRepository";
+import { SuiteService } from "../integrations/suiteService";
 
 export interface RunningApplication {
   window: BrowserWindow;
@@ -37,6 +39,8 @@ export async function startApplication(logger: Logger): Promise<RunningApplicati
   const connections = new RustPlusConnectionManager(servers, workspaces, vault, providerFactory, events, logger);
   const health = new AppHealthService(servers);
   const updates = new UpdateService(logger);
+  const suiteRepository = new SuiteRepository(database.db);
+  const suite = new SuiteService(suiteRepository, servers, settings, workspaces, connections, vault, app.getPath("userData"), logger);
   updates.setPreferences(settings.get().updateChannel, settings.get().skippedUpdateVersion);
 
   let quitting = false;
@@ -67,6 +71,7 @@ export async function startApplication(logger: Logger): Promise<RunningApplicati
       workspace.activity.push({ id: crypto.randomUUID(), type: "Connection", message: `${event.server.name}: ${event.server.status.toLowerCase().replaceAll("_", " ")}${event.server.statusReason ? ` — ${event.server.statusReason}` : ""}`, severity: ["ERROR", "STALE"].includes(event.server.status) ? "critical" : event.server.status === "DISCONNECTED" ? "warning" : "info", createdAt: event.timestamp });
       workspace.activity = workspace.activity.slice(-1000);
       workspaces.save(event.server.id, workspace);
+      suite.notifyServerStatus(event.server.name, event.server.status);
     }
     if (!settings.get().desktopNotifications || !Notification.isSupported()) return;
     if (before === "CONNECTED" && ["DISCONNECTED", "STALE", "ERROR"].includes(event.server.status)) new Notification({ title: `${event.server.name} disconnected`, body: event.server.statusReason ?? "Rust+ monitoring is reconnecting automatically." }).show();
@@ -84,11 +89,13 @@ export async function startApplication(logger: Logger): Promise<RunningApplicati
     logger,
     mockProviderEnabled,
     updates,
+    suite,
     onTrayRefresh: () => tray.refresh(),
   });
 
   void connections.restore();
   updates.start();
+  void suite.start();
 
   return {
     window,
@@ -97,6 +104,7 @@ export async function startApplication(logger: Logger): Promise<RunningApplicati
       unregisterIpc();
       unsubscribeOperationalNotifications();
       updates.stop();
+      await suite.shutdown();
       tray.destroy();
       await connections.shutdown();
       database.close();

@@ -5,6 +5,7 @@ import { appSettingsSchema } from "../shared/schemas/settings";
 import { serverProfileSchema } from "../shared/schemas/server";
 import { updateStateSchema } from "../shared/contracts/update";
 import { operationsSnapshotSchema, rustPlusCommandSchema, workspaceDocumentSchema } from "../shared/contracts/operations";
+import { connectedServicesConfigSchema, installedExtensionSchema, serverOwnerConfigSchema, suiteStateSchema } from "../shared/contracts/connectedServices";
 
 const api: RustCommandCenterApi = {
   getBootstrap: async () => bootstrapResponseSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.bootstrap)),
@@ -73,6 +74,23 @@ const api: RustCommandCenterApi = {
     ipcRenderer.on(IPC_CHANNELS.updateStateChanged, handler);
     return () => ipcRenderer.off(IPC_CHANNELS.updateStateChanged, handler);
   },
+  getSuiteState: async () => suiteStateSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.getSuiteState)),
+  saveConnectedServices: async (config, secrets = {}) => suiteStateSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.saveConnectedServices, { config: connectedServicesConfigSchema.parse(config), secrets })),
+  saveServerOwner: async (config, passwords = {}, bridgeToken) => suiteStateSchema.parse(await ipcRenderer.invoke(IPC_CHANNELS.saveServerOwner, { config: serverOwnerConfigSchema.parse(config), passwords, bridgeToken })),
+  testConnectedService: async (service) => String(await ipcRenderer.invoke(IPC_CHANNELS.testConnectedService, { service })),
+  profileSync: async (direction) => String(await ipcRenderer.invoke(IPC_CHANNELS.profileSync, { direction })),
+  sharedWorkspaceSync: async (direction, serverId) => String(await ipcRenderer.invoke(IPC_CHANNELS.sharedWorkspaceSync, { direction, serverId })),
+  sendDiscordMessage: async (message) => { await ipcRenderer.invoke(IPC_CHANNELS.sendDiscordMessage, { message }); },
+  chooseDirectory: async (title) => { const value = await ipcRenderer.invoke(IPC_CHANNELS.chooseDirectory, { title }); return typeof value === "string" ? value : null; },
+  rconConnect: async (profileId) => { await ipcRenderer.invoke(IPC_CHANNELS.rconConnect, { profileId }); },
+  rconDisconnect: async (profileId) => { await ipcRenderer.invoke(IPC_CHANNELS.rconDisconnect, { profileId }); },
+  rconCommand: async (profileId, command) => Number(await ipcRenderer.invoke(IPC_CHANNELS.rconCommand, { profileId, command })),
+  ownerAction: async (profileId, action, target = "", reason = "") => Number(await ipcRenderer.invoke(IPC_CHANNELS.ownerAction, { profileId, action, target, reason })),
+  readServerConfig: async (profileId) => String(await ipcRenderer.invoke(IPC_CHANNELS.readServerConfig, { profileId })),
+  saveServerConfig: async (profileId, content) => { await ipcRenderer.invoke(IPC_CHANNELS.saveServerConfig, { profileId, content }); },
+  runServerBackup: async (profileId) => String(await ipcRenderer.invoke(IPC_CHANNELS.runServerBackup, { profileId })),
+  openExtensionsFolder: async () => { await ipcRenderer.invoke(IPC_CHANNELS.openExtensionsFolder); },
+  setExtensionEnabled: async (id, enabled, approvedPermissions) => installedExtensionSchema.array().parse(await ipcRenderer.invoke(IPC_CHANNELS.setExtensionEnabled, { id, enabled, approvedPermissions })),
 };
 
 contextBridge.exposeInMainWorld("rcc", Object.freeze(api));

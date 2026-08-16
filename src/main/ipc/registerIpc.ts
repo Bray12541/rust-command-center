@@ -23,6 +23,8 @@ import { RustPlusConnectionManager } from "../rustplus/connectionManager";
 import { CredentialVault } from "../security/credentialVault";
 import { SlidingWindowRateLimiter } from "../security/rateLimiter";
 import { UpdateService } from "../updates/updateService";
+import { connectedServicesUpdateSchema, serverOwnerUpdateSchema } from "../../shared/contracts/connectedServices";
+import { SuiteService } from "../integrations/suiteService";
 
 const selectServerSchema = z.object({ serverId: z.string().uuid().nullable() });
 const serverCommandSchema = z.object({ serverId: z.string().uuid(), command: rustPlusCommandSchema });
@@ -34,6 +36,16 @@ const webhookSchema = z.object({ url: z.string().url().refine((url) => url.start
 const externalUrlSchema = z.object({ url: z.string().url().refine((url) => /^https?:\/\//i.test(url), "Only HTTP(S) links are allowed") });
 const endpointSchema = z.object({ address: z.string().trim().min(1).max(253), port: z.number().int().min(1).max(65535) });
 const panelWindowSchema = z.object({ panel: z.enum(["map", "chat"]) });
+const serviceTestSchema = z.object({ service: z.enum(["discord", "shared-workspace", "telemetry", "mobile", "bridge"]) });
+const syncSchema = z.object({ direction: z.enum(["push", "pull"]) });
+const workspaceSyncSchema = syncSchema.extend({ serverId: z.string().uuid() });
+const discordMessageSchema = z.object({ message: z.string().trim().min(1).max(1900) });
+const chooseDirectorySchema = z.object({ title: z.string().trim().min(1).max(100) });
+const ownerProfileRequestSchema = z.object({ profileId: z.string().uuid() });
+const rconCommandRequestSchema = ownerProfileRequestSchema.extend({ command: z.string().trim().min(1).max(500) });
+const ownerActionSchema = ownerProfileRequestSchema.extend({ action: z.enum(["save", "announce", "kick", "ban", "unban", "restart", "plugins", "performance"]), target: z.string().max(80).default(""), reason: z.string().max(160).default("") });
+const serverConfigSaveSchema = ownerProfileRequestSchema.extend({ content: z.string().max(1024 * 1024) });
+const extensionSetSchema = z.object({ id: z.string(), enabled: z.boolean(), approvedPermissions: z.array(z.enum(["open-external", "read-server-summary", "read-workspace", "theme"])) });
 
 interface IpcDependencies {
   servers: ServerRepository;
@@ -46,6 +58,7 @@ interface IpcDependencies {
   logger: Logger;
   mockProviderEnabled: boolean;
   updates: UpdateService;
+  suite: SuiteService;
   onTrayRefresh(): void;
 }
 
@@ -158,7 +171,7 @@ export function registerIpc(dependencies: IpcDependencies): () => void {
   register(IPC_CHANNELS.getOperations, serverActionRequestSchema, ({ serverId }) => dependencies.connections.getOperations(serverId));
   register(IPC_CHANNELS.executeCommand, serverCommandSchema, ({ serverId, command }) => dependencies.connections.execute(serverId, command));
   register(IPC_CHANNELS.getWorkspace, serverActionRequestSchema, ({ serverId }) => dependencies.workspaces.get(serverId));
-  register(IPC_CHANNELS.saveWorkspace, workspaceSaveSchema, ({ serverId, document }) => dependencies.workspaces.save(serverId, document));
+  register(IPC_CHANNELS.saveWorkspace, workspaceSaveSchema, ({ serverId, document }) => { const saved = dependencies.workspaces.save(serverId, document); dependencies.suite.maybeAutoSync(serverId); return saved; });
   register(IPC_CHANNELS.exportData, serverActionRequestSchema, async ({ serverId }) => {
     const server = dependencies.servers.get(serverId);
     if (!server) throw new Error("Server profile not found");
@@ -211,6 +224,23 @@ export function registerIpc(dependencies: IpcDependencies): () => void {
   register(IPC_CHANNELS.downloadUpdate, null, () => dependencies.updates.download());
   register(IPC_CHANNELS.installUpdate, null, () => dependencies.updates.install());
   register(IPC_CHANNELS.openReleases, null, () => dependencies.updates.openReleases());
+  register(IPC_CHANNELS.getSuiteState, null, () => dependencies.suite.snapshot());
+  register(IPC_CHANNELS.saveConnectedServices, connectedServicesUpdateSchema, ({ config, secrets }) => dependencies.suite.saveConnected(config, secrets));
+  register(IPC_CHANNELS.saveServerOwner, serverOwnerUpdateSchema, ({ config, passwords, bridgeToken }) => dependencies.suite.saveOwner(config, passwords, bridgeToken));
+  register(IPC_CHANNELS.testConnectedService, serviceTestSchema, ({ service }) => dependencies.suite.testService(service));
+  register(IPC_CHANNELS.profileSync, syncSchema, ({ direction }) => dependencies.suite.profileSync(direction));
+  register(IPC_CHANNELS.sharedWorkspaceSync, workspaceSyncSchema, ({ direction, serverId }) => dependencies.suite.sharedWorkspaceSync(direction, serverId));
+  register(IPC_CHANNELS.sendDiscordMessage, discordMessageSchema, ({ message }) => dependencies.suite.sendDiscord(message));
+  register(IPC_CHANNELS.chooseDirectory, chooseDirectorySchema, async ({ title }) => { const result = await dialog.showOpenDialog({ title, properties: ["openDirectory", "createDirectory"] }); return result.canceled ? null : result.filePaths[0] ?? null; });
+  register(IPC_CHANNELS.rconConnect, ownerProfileRequestSchema, ({ profileId }) => dependencies.suite.connectRcon(profileId));
+  register(IPC_CHANNELS.rconDisconnect, ownerProfileRequestSchema, ({ profileId }) => dependencies.suite.disconnectRcon(profileId));
+  register(IPC_CHANNELS.rconCommand, rconCommandRequestSchema, ({ profileId, command }) => dependencies.suite.runRcon(profileId, command));
+  register(IPC_CHANNELS.ownerAction, ownerActionSchema, ({ profileId, action, target, reason }) => dependencies.suite.runOwnerAction(profileId, action, target, reason));
+  register(IPC_CHANNELS.readServerConfig, ownerProfileRequestSchema, ({ profileId }) => dependencies.suite.readServerConfig(profileId));
+  register(IPC_CHANNELS.saveServerConfig, serverConfigSaveSchema, ({ profileId, content }) => dependencies.suite.saveServerConfig(profileId, content));
+  register(IPC_CHANNELS.runServerBackup, ownerProfileRequestSchema, ({ profileId }) => dependencies.suite.backup(profileId));
+  register(IPC_CHANNELS.openExtensionsFolder, null, () => dependencies.suite.openExtensionsFolder());
+  register(IPC_CHANNELS.setExtensionEnabled, extensionSetSchema, ({ id, enabled, approvedPermissions }) => dependencies.suite.setExtension(id, enabled, approvedPermissions));
 
   const unsubscribe = dependencies.events.subscribe((appEvent) => {
     for (const window of BrowserWindow.getAllWindows()) {

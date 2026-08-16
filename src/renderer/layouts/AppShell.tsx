@@ -31,7 +31,7 @@ export function AppShell() {
         <Sidebar />
         <div className="main-column">
           <TopBar onOpenCommands={() => setCommandsOpen(true)} />
-          <main className={`content ${!["/servers", "/settings", "/diagnostics", "/help", "/logs"].includes(location.pathname) ? "content-workspace" : ""}`}><Outlet /></main>
+          <main className={`content ${!["/servers", "/settings", "/diagnostics", "/help", "/logs", "/integrations", "/server-owner"].includes(location.pathname) ? "content-workspace" : ""}`}><Outlet /></main>
         </div>
       </div>
       <CommandPalette open={commandsOpen} onClose={() => setCommandsOpen(false)} />
